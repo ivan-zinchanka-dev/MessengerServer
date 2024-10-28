@@ -6,13 +6,13 @@ namespace MessengerServer.Server;
 
 public class DatabaseContext : IAsyncDisposable
 {
-    private const string ConnectionString = "Server=localhost;Database=ChatAppDB;Trusted_Connection=True;TrustServerCertificate=True;";
+    private const string ConnectionString = "Server=localhost;Database=chat_app;Trusted_Connection=True;TrustServerCertificate=True;";
     private const string FindUserExpression = "SELECT [Nickname] FROM [User] WHERE [Nickname] = @Nickname AND [Password] = @Password";
     private const string CreateUserExpression = "INSERT INTO [User] VALUES (@Nickname, @Password)";
     private const string GetAllSortedMessagesExpression = "SELECT * FROM [Message] ORDER BY [PostDateTime]";
     private const string PostMessageExpression = "INSERT INTO [Message] VALUES (@SenderNickname, @ReceiverNickname, @Text, @PostDateTime)";
     
-    private SqlConnection _connection;
+    private readonly SqlConnection _connection;
 
     public DatabaseContext()
     {

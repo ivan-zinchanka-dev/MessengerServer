@@ -37,12 +37,16 @@ public class AppServer : IAsyncDisposable
             }
         }
     }
+
+    public AppServer(DatabaseContext databaseContext)
+    {
+        _databaseContext = databaseContext;
+    }
     
     public async void StartAsync()
     {
         try
         {
-            _databaseContext = new DatabaseContext();
             await _databaseContext.ConnectToDatabaseAsync();
             _messages = new ConcurrentQueue<Message>(await _databaseContext.GetAllMessagesAsync());
 
@@ -91,7 +95,6 @@ public class AppServer : IAsyncDisposable
             Task.Run(() => HandleClientServiceAsync(newResult));
         }
     }
-    
     
     private async void HandleClientAsync(TcpClient tcpClient)
     {
