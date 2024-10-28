@@ -35,6 +35,7 @@ public static class Program
             .ConfigureServices(services =>
             {
                 services
+                    .AddSingleton<AppServerOptions>(_serverOptions)
                     .AddSingleton<AppServer>()
                     .AddTransient<DatabaseContext>();
             })

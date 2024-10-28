@@ -14,13 +14,15 @@ public class AppServer : IAsyncDisposable
 {
     private TcpListener _tcpListener;
     private UdpClient _udpReceiver;
+    
+    private readonly AppServerOptions _options;
     private readonly DatabaseContext _databaseContext;
     
     private readonly object _stateLocker = new object();
     private bool _isRunning;
     
     private ConcurrentQueue<Message> _messages;
-
+    
     public ILogger<AppServer> Logger { get; private set; }
 
     private bool IsRunning
@@ -42,8 +44,9 @@ public class AppServer : IAsyncDisposable
         }
     }
 
-    public AppServer(DatabaseContext databaseContext, ILogger<AppServer> logger)
+    public AppServer(AppServerOptions options, DatabaseContext databaseContext, ILogger<AppServer> logger)
     {
+        _options = options;
         _databaseContext = databaseContext;
         Logger = logger;
     }
@@ -76,7 +79,7 @@ public class AppServer : IAsyncDisposable
     
     private async Task StartClientsLoop()
     {
-        _tcpListener = new TcpListener(IPAddress.Any, 8888);
+        _tcpListener = new TcpListener(IPAddress.Any, _options.ClientPort);
         _tcpListener.Start();
     
         Logger.LogInformation($"Clients loop started on thread {Thread.CurrentThread.ManagedThreadId}");
@@ -90,7 +93,7 @@ public class AppServer : IAsyncDisposable
 
     private async Task StartClientServicesLoop()
     {
-        _udpReceiver = new UdpClient(5555);
+        _udpReceiver = new UdpClient(_options.ClientServicePort);
 
         Logger.LogInformation($"Client services loop started on thread {Thread.CurrentThread.ManagedThreadId}");
         
