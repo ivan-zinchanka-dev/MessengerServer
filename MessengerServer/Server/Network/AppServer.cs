@@ -5,9 +5,10 @@ using System.Text;
 using System.Text.Json;
 using MessengerServer.Core.Infrastructure;
 using MessengerServer.Core.Models;
+using MessengerServer.Server.Database;
 using Microsoft.Extensions.Logging;
 
-namespace MessengerServer.Server;
+namespace MessengerServer.Server.Network;
 
 public class AppServer : IAsyncDisposable
 {

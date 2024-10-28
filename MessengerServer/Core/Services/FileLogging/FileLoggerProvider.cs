@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace MessengerClient.Core.Services.FileLogging;
+namespace MessengerServer.Core.Services.FileLogging;
 
 public class FileLoggerProvider : ILoggerProvider
 {

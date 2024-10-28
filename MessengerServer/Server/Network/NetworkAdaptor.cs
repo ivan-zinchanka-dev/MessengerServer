@@ -1,7 +1,7 @@
 ﻿using System.Net.Sockets;
 using MessengerServer.Core.Infrastructure;
 
-namespace MessengerServer.Server;
+namespace MessengerServer.Server.Network;
 
 public class NetworkAdaptor
 {

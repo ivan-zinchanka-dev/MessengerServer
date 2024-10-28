@@ -1,7 +1,7 @@
 ﻿using System.Data;
 using Microsoft.Data.SqlClient;
 
-namespace MessengerServer.Server;
+namespace MessengerServer.Server.Database;
 
 public static class DatabaseExtensions
 {

@@ -1,8 +1,6 @@
-﻿using System;
-using System.IO;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 
-namespace MessengerClient.Core.Services.FileLogging;
+namespace MessengerServer.Core.Services.FileLogging;
 
 public class FileLogger : ILogger, IDisposable
 {
@@ -22,12 +20,7 @@ public class FileLogger : ILogger, IDisposable
     {
         lock (_threadLock)
         {
-            if (!File.Exists(_fullFileName))
-            {
-                File.Create(_fullFileName);
-            }
-
-            File.AppendAllTextAsync(_fullFileName, _categoryName != null ? 
+            File.AppendAllText(_fullFileName, _categoryName != null ? 
                 $"[{DateTime.Now}] <{_categoryName}> {GetLogPrefix(logLevel)}: {formatter(state, exception)}\n" : 
                 $"[{DateTime.Now}] {GetLogPrefix(logLevel)}: {formatter(state, exception)}\n");
         }

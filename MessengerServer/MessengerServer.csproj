@@ -12,4 +12,11 @@
       <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="app_config.ini" />
+      <Content Include="app_config.ini">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
 </Project>

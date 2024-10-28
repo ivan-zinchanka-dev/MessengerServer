@@ -3,7 +3,7 @@ using MessengerServer.Core.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 
-namespace MessengerServer.Server;
+namespace MessengerServer.Server.Database;
 
 public class DatabaseContext : IAsyncDisposable
 {

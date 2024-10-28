@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using System.Text;
 
-namespace MessengerClient.Core.Services;
+namespace MessengerServer.Core.Services;
 
 public class IniService
 {
