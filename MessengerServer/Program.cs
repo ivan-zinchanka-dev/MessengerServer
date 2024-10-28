@@ -47,7 +47,7 @@ public static class Program
             _appServer.StartAsync();
         
             _appServer.Logger.LogInformation($"Your control loop started on thread {Thread.CurrentThread.ManagedThreadId}");
-        
+            
             while (true)
             {
                 _appServer.Logger.LogInformation($"Input \"{ShutdownCommand}\" to shutdown the server");
@@ -65,7 +65,7 @@ public static class Program
         }
         catch (Exception ex)
         {
-            _appServer.Logger.LogCritical($"{ex.Message}\n{ex.StackTrace}");
+            _appServer.Logger.LogCritical(ex, "Unhandled exception occured");
         }
     }
     

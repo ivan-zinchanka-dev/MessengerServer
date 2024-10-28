@@ -20,10 +20,17 @@ public class FileLogger : ILogger, IDisposable
     {
         lock (_threadLock)
         {
-            File.AppendAllText(_fullFileName, _categoryName != null ? 
-                $"[{DateTime.Now}] <{_categoryName}> {GetLogPrefix(logLevel)}: {formatter(state, exception)}\n" : 
-                $"[{DateTime.Now}] {GetLogPrefix(logLevel)}: {formatter(state, exception)}\n");
-        }
+            string logContent = _categoryName != null
+                ? $"[{DateTime.Now}] <{_categoryName}> {nameof(logLevel)}: {formatter(state, exception)}\n"
+                : $"[{DateTime.Now}] {nameof(logLevel)}: {formatter(state, exception)}\n";
+            
+            if (exception != null)
+            {
+                logContent += exception.StackTrace;
+            }
+            
+            File.AppendAllText(_fullFileName, logContent);
+        } 
     }
 
     public bool IsEnabled(LogLevel logLevel)
@@ -37,24 +44,4 @@ public class FileLogger : ILogger, IDisposable
     }
 
     public void Dispose() { }
-    
-    private static string GetLogPrefix(LogLevel logType)
-    {
-        switch (logType)
-        {
-            case LogLevel.Error:
-            case LogLevel.Critical:
-                return "Error";
-                
-            case LogLevel.Warning:
-                return "Warning";
-                
-            case LogLevel.None:
-            case LogLevel.Trace:
-            case LogLevel.Debug:
-            case LogLevel.Information:
-            default:
-                return "Information";
-        }
-    }
 }
