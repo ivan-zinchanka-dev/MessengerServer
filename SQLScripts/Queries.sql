@@ -1,4 +1,4 @@
-USE ChatAppDB
+USE chat_app
 GO
 
 CREATE TABLE [User] (
