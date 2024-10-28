@@ -26,15 +26,15 @@ public static class Program
                     .AddTransient<DatabaseContext>();
             })
             .Build();
-
-        Console.WriteLine("Your control loop started on thread " + Thread.CurrentThread.ManagedThreadId);
         
         _appServer = host.Services.GetRequiredService<AppServer>();
         _appServer.StartAsync();
         
+        _appServer.Logger.LogInformation($"Your control loop started on thread {Thread.CurrentThread.ManagedThreadId}");
+        
         while (true)
         {
-            Console.WriteLine("Input \"shutdown\" to shutdown the server");
+            _appServer.Logger.LogInformation($"Input \"{ShutdownCommand}\" to shutdown the server");
             
             string command = Console.ReadLine();
 

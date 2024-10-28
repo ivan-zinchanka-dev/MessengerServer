@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using MessengerServer.Core.Models;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Logging;
 
 namespace MessengerServer.Server;
 
@@ -13,10 +14,14 @@ public class DatabaseContext : IAsyncDisposable
     private const string PostMessageExpression = "INSERT INTO [Message] VALUES (@SenderNickname, @ReceiverNickname, @Text, @PostDateTime)";
     
     private readonly SqlConnection _connection;
-
-    public DatabaseContext()
+    private readonly ILogger<DatabaseContext> _logger;
+    
+    // TODO Correct all strings (Client & Server)
+    
+    public DatabaseContext(ILogger<DatabaseContext> logger)
     {
         _connection = new SqlConnection(ConnectionString);
+        _logger = logger;
     }
 
     public async Task ConnectToDatabaseAsync()
@@ -24,13 +29,12 @@ public class DatabaseContext : IAsyncDisposable
         try
         {
             await _connection.OpenAsync();
-            Console.WriteLine("Connected with database");
+            _logger.LogInformation("Connected with database");
         }
         catch (SqlException ex)
         {
-            Console.WriteLine(ex.Message);
+            _logger.LogError(ex.Message);
         }
-        
     }
 
     public async Task<bool> IsUserExistsAsync(User user)
@@ -50,7 +54,7 @@ public class DatabaseContext : IAsyncDisposable
         }
         catch (SqlException ex)
         {
-            Console.WriteLine(ex.Message);
+            _logger.LogError(ex.Message);
         }
 
         return false;
@@ -69,7 +73,7 @@ public class DatabaseContext : IAsyncDisposable
         }
         catch (SqlException ex)
         {
-            Console.WriteLine(ex.Message);
+            _logger.LogError(ex.Message);
         }
 
         return false;
@@ -105,7 +109,7 @@ public class DatabaseContext : IAsyncDisposable
         }
         catch (SqlException ex)
         {
-            Console.WriteLine(ex.Message);
+            _logger.LogError(ex.Message);
             return null;
         }
     }
@@ -125,7 +129,7 @@ public class DatabaseContext : IAsyncDisposable
         }
         catch (SqlException ex)
         {
-            Console.WriteLine(ex.Message);
+            _logger.LogError(ex.Message);
             return false;
         }
     }
@@ -135,7 +139,7 @@ public class DatabaseContext : IAsyncDisposable
         if (_connection.State == ConnectionState.Open)
         {
             await _connection.CloseAsync();
-            Console.WriteLine("Disconnected from database");
+            _logger.LogInformation("Disconnected from database");
         }
     }
 

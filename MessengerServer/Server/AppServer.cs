@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Json;
 using MessengerServer.Core.Infrastructure;
 using MessengerServer.Core.Models;
+using Microsoft.Extensions.Logging;
 
 namespace MessengerServer.Server;
 
@@ -12,13 +13,15 @@ public class AppServer : IAsyncDisposable
 {
     private TcpListener _tcpListener;
     private UdpClient _udpReceiver;
-    private DatabaseContext _databaseContext;
+    private readonly DatabaseContext _databaseContext;
     
     private readonly object _stateLocker = new object();
     private bool _isRunning;
     
     private ConcurrentQueue<Message> _messages;
-    
+
+    public ILogger<AppServer> Logger { get; private set; }
+
     private bool IsRunning
     {
         get
@@ -38,9 +41,10 @@ public class AppServer : IAsyncDisposable
         }
     }
 
-    public AppServer(DatabaseContext databaseContext)
+    public AppServer(DatabaseContext databaseContext, ILogger<AppServer> logger)
     {
         _databaseContext = databaseContext;
+        Logger = logger;
     }
     
     public async void StartAsync()
@@ -51,7 +55,7 @@ public class AppServer : IAsyncDisposable
             _messages = new ConcurrentQueue<Message>(await _databaseContext.GetAllMessagesAsync());
 
             IsRunning = true;
-            Console.WriteLine("Server is started on thread " + Thread.CurrentThread.ManagedThreadId);
+            Logger.LogInformation($"Server is started on thread {Thread.CurrentThread.ManagedThreadId}");
             
             Task clientsLoop = Task.Run(StartClientsLoop);
             Task clientServicesLoop = Task.Run(StartClientServicesLoop);
@@ -61,20 +65,20 @@ public class AppServer : IAsyncDisposable
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message + "\n" + ex.StackTrace);
+            Logger.LogCritical($"{ex.Message}\n{ex.StackTrace}");
         }
         finally
         {
             await DisposeAsync();
         }
     }
-
+    
     private async Task StartClientsLoop()
     {
         _tcpListener = new TcpListener(IPAddress.Any, 8888);
         _tcpListener.Start();
     
-        Console.WriteLine("Clients loop started on thread " + Thread.CurrentThread.ManagedThreadId);
+        Logger.LogInformation($"Clients loop started on thread {Thread.CurrentThread.ManagedThreadId}");
         
         while (IsRunning)
         {
@@ -87,7 +91,7 @@ public class AppServer : IAsyncDisposable
     {
         _udpReceiver = new UdpClient(5555);
 
-        Console.WriteLine("Client services loop started on thread " + Thread.CurrentThread.ManagedThreadId);
+        Logger.LogInformation($"Client services loop started on thread {Thread.CurrentThread.ManagedThreadId}");
         
         while (IsRunning)
         {
@@ -136,52 +140,21 @@ public class AppServer : IAsyncDisposable
                         break;
 
                     default:
-                        Console.WriteLine("Unknown command");
+                        Logger.LogWarning("Unknown command");
                         break;
                 }
-
             }
-            
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message + "\n" + ex.StackTrace);
+            Logger.LogError($"{ex.Message}\n{ex.StackTrace}");
         }
         finally
         {
             tcpClient.Close();
         }
-        
     }
-
-    /*private async void HandleServicesAsync()
-    {
-        UdpClient udpClient = new UdpClient(5555);
-
-        while (IsRunning)
-        {
-            UdpReceiveResult receiveResult = await udpClient.ReceiveAsync();
-            Query query = Query.FromRawLine(Encoding.UTF8.GetString(receiveResult.Buffer));
-
-            if (query.Header == QueryHeader.UpdateChat)
-            {
-                string jsonMessageBuffer = JsonSerializer.Serialize(_messages.ToArray());
-                Response response = new Response(jsonMessageBuffer);
-                
-                byte[] binaryResponse = Encoding.UTF8.GetBytes(response.ToString());
-                await udpClient.SendAsync(binaryResponse, receiveResult.RemoteEndPoint);
-            }
-            else
-            {
-                Console.WriteLine("Unknown command");
-            }
-        }
-        
-        udpClient.Close();
-    }*/
-
     
-
     private async void HandleClientServiceAsync(UdpReceiveResult udpReceiveResult)
     {
         UdpClient udpSender = new UdpClient();
@@ -200,18 +173,17 @@ public class AppServer : IAsyncDisposable
             }
             else
             {
-                Console.WriteLine("Unknown command");
+                Logger.LogWarning("Unknown command");
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message + "\n" + ex.StackTrace);
+            Logger.LogError($"{ex.Message}\n{ex.StackTrace}");
         }
         finally
         {
             udpSender.Close();
         }
-
     }
 
     private async Task<Response> SignIn(string jsonDataString)
