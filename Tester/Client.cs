@@ -1,7 +1,7 @@
 ﻿using System.Net.Sockets;
 using System.Text.Json;
-using MessengerServer.Core.Infrastructure;
-using MessengerServer.Core.Models;
+using MessengerCoreLibrary.Infrastructure;
+using MessengerCoreLibrary.Models;
 
 namespace Tester;
 

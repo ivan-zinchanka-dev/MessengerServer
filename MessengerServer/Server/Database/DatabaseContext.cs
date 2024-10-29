@@ -1,5 +1,5 @@
 ﻿using System.Data;
-using MessengerServer.Core.Models;
+using MessengerCoreLibrary.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 

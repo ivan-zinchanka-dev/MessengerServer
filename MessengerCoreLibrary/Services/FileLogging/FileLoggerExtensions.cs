@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace MessengerServer.Core.Services.FileLogging;
+namespace MessengerCoreLibrary.Services.FileLogging;
 
 public static class FileLoggerExtensions
 {

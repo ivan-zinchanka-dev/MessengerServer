@@ -1,4 +1,4 @@
-﻿namespace MessengerServer.Core.Models;
+﻿namespace MessengerCoreLibrary.Models;
 
 public class Message
 {

@@ -1,4 +1,4 @@
-﻿namespace MessengerServer.Core.Infrastructure;
+﻿namespace MessengerCoreLibrary.Infrastructure;
 
 public class Response
 {

@@ -1,5 +1,5 @@
-﻿using MessengerServer.Core.Services;
-using MessengerServer.Core.Services.FileLogging;
+﻿using MessengerCoreLibrary.Services;
+using MessengerCoreLibrary.Services.FileLogging;
 using MessengerServer.Server.Database;
 using MessengerServer.Server.Network;
 using Microsoft.Extensions.DependencyInjection;
@@ -79,17 +79,10 @@ public static class Program
     {
         const string serverSection = "Server";
         
-        string clientPortString = _iniService.GetString(
-            serverSection,
-            nameof(_serverOptions.ClientPort));
-            
-        string servicePortString = _iniService.GetString(
-            serverSection,
-            nameof(_serverOptions.ClientServicePort));
+        string clientPortString = _iniService.GetString(serverSection, nameof(_serverOptions.ClientPort));
+        string servicePortString = _iniService.GetString(serverSection, nameof(_serverOptions.ClientServicePort));
 
-        _serverOptions = new AppServerOptions(
-            Convert.ToInt32(clientPortString), 
-            Convert.ToInt32(servicePortString));
+        _serverOptions = new AppServerOptions(Convert.ToInt32(clientPortString), Convert.ToInt32(servicePortString));
     }
     
 }

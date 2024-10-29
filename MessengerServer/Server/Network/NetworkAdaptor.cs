@@ -1,5 +1,5 @@
 ﻿using System.Net.Sockets;
-using MessengerServer.Core.Infrastructure;
+using MessengerCoreLibrary.Infrastructure;
 
 namespace MessengerServer.Server.Network;
 
