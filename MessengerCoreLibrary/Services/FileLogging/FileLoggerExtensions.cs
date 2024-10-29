@@ -1,11 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace MessengerCoreLibrary.Services.FileLogging;
-
-public static class FileLoggerExtensions
+namespace MessengerCoreLibrary.Services.FileLogging
 {
-    public static ILoggingBuilder AddFile(this ILoggingBuilder builder, string filePath)
+    public static class FileLoggerExtensions
     {
-        return builder.AddProvider(new FileLoggerProvider(filePath));
+        public static ILoggingBuilder AddFile(this ILoggingBuilder builder, string filePath)
+        {
+            return builder.AddProvider(new FileLoggerProvider(filePath));
+        }
     }
 }

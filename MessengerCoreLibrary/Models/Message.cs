@@ -1,14 +1,17 @@
-﻿namespace MessengerCoreLibrary.Models;
+﻿using System;
 
-public class Message
+namespace MessengerCoreLibrary.Models
 {
-    public string SenderNickname { get; init; }
-    public string ReceiverNickname { get; init; }
-    public string Text { get; init; }
-    public DateTime PostDateTime { get; init; }
-    
-    public override string ToString()
+    public class Message
     {
-        return Text;
+        public string SenderNickname { get; set; }
+        public string ReceiverNickname { get; set; }
+        public string Text { get; set; }
+        public DateTime PostDateTime { get; set; }
+    
+        public override string ToString()
+        {
+            return Text;
+        }
     }
 }

@@ -1,28 +1,30 @@
-﻿using MessengerCoreLibrary.Models;
+﻿using System.Collections.Generic;
+using MessengerCoreLibrary.Models;
 
-namespace MessengerCoreLibrary.Infrastructure;
-
-public class MessageEqualityComparer : IEqualityComparer<Message>
+namespace MessengerCoreLibrary.Infrastructure
 {
-    public bool Equals(Message first, Message second)
+    public class MessageEqualityComparer : IEqualityComparer<Message>
     {
-        if (ReferenceEquals(first, second)) 
-            return true;
+        public bool Equals(Message first, Message second)
+        {
+            if (ReferenceEquals(first, second)) 
+                return true;
 
-        if (first == null || second == null) 
-            return false;
+            if (first == null || second == null) 
+                return false;
 
-        return first.SenderNickname == second.SenderNickname
-               && first.ReceiverNickname == second.ReceiverNickname
-               && first.Text == second.Text
-               && first.PostDateTime == second.PostDateTime;
-    }
+            return first.SenderNickname == second.SenderNickname
+                   && first.ReceiverNickname == second.ReceiverNickname
+                   && first.Text == second.Text
+                   && first.PostDateTime == second.PostDateTime;
+        }
 
-    public int GetHashCode(Message message)
-    {
-        return message.SenderNickname.GetHashCode()
-               ^ message.ReceiverNickname.GetHashCode()
-               ^ message.Text.GetHashCode()
-               ^ message.PostDateTime.GetHashCode();
+        public int GetHashCode(Message message)
+        {
+            return message.SenderNickname.GetHashCode()
+                   ^ message.ReceiverNickname.GetHashCode()
+                   ^ message.Text.GetHashCode()
+                   ^ message.PostDateTime.GetHashCode();
+        }
     }
 }

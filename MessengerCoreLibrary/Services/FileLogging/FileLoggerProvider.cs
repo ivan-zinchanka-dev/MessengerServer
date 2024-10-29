@@ -1,20 +1,21 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace MessengerCoreLibrary.Services.FileLogging;
-
-public class FileLoggerProvider : ILoggerProvider
+namespace MessengerCoreLibrary.Services.FileLogging
 {
-    private readonly string _fullFileName;
-
-    public FileLoggerProvider(string fullFileName)
+    public class FileLoggerProvider : ILoggerProvider
     {
-        _fullFileName = fullFileName;
-    }
+        private readonly string _fullFileName;
 
-    public ILogger CreateLogger(string categoryName)
-    {
-        return new FileLogger(_fullFileName, categoryName);
-    }
+        public FileLoggerProvider(string fullFileName)
+        {
+            _fullFileName = fullFileName;
+        }
+
+        public ILogger CreateLogger(string categoryName)
+        {
+            return new FileLogger(_fullFileName, categoryName);
+        }
     
-    public void Dispose() { }
+        public void Dispose() { }
+    }
 }

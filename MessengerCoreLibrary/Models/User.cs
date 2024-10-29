@@ -1,7 +1,8 @@
-﻿namespace MessengerCoreLibrary.Models;
-
-public class User
+﻿namespace MessengerCoreLibrary.Models
 {
-    public string Nickname { get; init; }
-    public string Password { get; init; }
+    public class User
+    {
+        public string Nickname { get; set; }
+        public string Password { get; set; }
+    }
 }
