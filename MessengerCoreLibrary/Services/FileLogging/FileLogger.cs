@@ -25,8 +25,8 @@ namespace MessengerCoreLibrary.Services.FileLogging
             lock (_threadLock)
             {
                 string logContent = _categoryName != null
-                    ? $"[{DateTime.Now}] <{_categoryName}> {nameof(logLevel)}: {formatter(state, exception)}\n"
-                    : $"[{DateTime.Now}] {nameof(logLevel)}: {formatter(state, exception)}\n";
+                    ? $"[{DateTime.Now}] <{_categoryName}> {logLevel.ToString()}: {formatter(state, exception)}\n"
+                    : $"[{DateTime.Now}] {logLevel.ToString()}: {formatter(state, exception)}\n";
             
                 if (exception != null)
                 {
