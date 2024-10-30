@@ -14,41 +14,31 @@ public class Client
             using TcpClient tcpClient = new TcpClient();
             await tcpClient.ConnectAsync("127.0.0.1", 8888);
             NetworkStream networkStream = tcpClient.GetStream();
-        
-            Console.WriteLine("Connected");
-
+            Console.WriteLine("Connected to server");
             
             StreamWriter writer = new StreamWriter(networkStream);
-            
             string rawLine = JsonSerializer.Serialize(CreateTestMessage());
-            
-            Console.WriteLine("String: " + rawLine);
+            Console.WriteLine("Raw test message string: " + rawLine);
 
             Query query = new Query(QueryHeader.PostMessage, rawLine);
-            
             await writer.WriteAsync(query.ToString());
             await writer.FlushAsync();
-            
-            
-            Console.WriteLine("Wrote");
+            Console.WriteLine("Message was sent");
         
             StreamReader reader = new StreamReader(networkStream);
-            Console.WriteLine("GetStream");
-            
             rawLine = await reader.ReadLineAsync();
-            Console.WriteLine("Read");
+            Console.WriteLine("Raw messages list string: " + rawLine);
             
             Response response = Response.FromRawLine(rawLine);
             List<Message> chat = JsonSerializer.Deserialize<List<Message>>(response.JsonDataString);
-
-            Console.WriteLine("Read");
-        
+            
+            Console.WriteLine("Received messages:");
             foreach (Message message in chat)
             {
                 Console.WriteLine(message);
             }
             
-            //tcpClient.Close();
+            tcpClient.Close();
         }
         catch (Exception ex)
         {
@@ -56,15 +46,8 @@ public class Client
         }
     }
     
-    private Message CreateTestMessage()
+    private static Message CreateTestMessage()
     {
-        return new Message()
-        {
-            SenderNickname = "Nick",
-            ReceiverNickname = "Mike",
-            Text = "Just a test message.",
-            PostDateTime = DateTime.UtcNow,
-        };
-        
+        return new Message("Nick", "Mike", "Just a test message.", DateTime.UtcNow);
     }
 }

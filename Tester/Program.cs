@@ -1,7 +1,4 @@
-﻿using System.Net.Sockets;
-using System.Text;
-
-namespace Tester;
+﻿namespace Tester;
 
 public static class Program
 {
@@ -12,8 +9,4 @@ public static class Program
         _client = new Client();
         await _client.Run();
     }
-
-    
-    
-    
 }
