@@ -20,6 +20,8 @@ namespace MessengerCoreLibrary.Services.FileLogging
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, 
             Func<TState, Exception, string> formatter)
         {
+            CreateDirectoryIfNeed();
+            
             lock (_threadLock)
             {
                 string logContent = _categoryName != null
@@ -46,5 +48,15 @@ namespace MessengerCoreLibrary.Services.FileLogging
         }
 
         public void Dispose() { }
+
+        private void CreateDirectoryIfNeed()
+        {
+            string directoryPath = Path.GetDirectoryName(_fullFileName);
+            
+            if (!string.IsNullOrEmpty(directoryPath) && !Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+        }
     }
 }

@@ -47,11 +47,11 @@ public static class Program
         {
             _appServer.StartAsync();
         
-            _appServer.Logger.LogInformation($"Your control loop started on thread {Thread.CurrentThread.ManagedThreadId}");
+            Console.WriteLine($"Your control loop started on thread {Thread.CurrentThread.ManagedThreadId}");
             
             while (true)
             {
-                _appServer.Logger.LogInformation($"Input \"{ShutdownCommand}\" to shutdown the server");
+                Console.WriteLine($"Input \"{ShutdownCommand}\" to shutdown the server");
             
                 string command = Console.ReadLine();
 

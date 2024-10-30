@@ -92,14 +92,12 @@ public class DatabaseContext : IAsyncDisposable
             {
                 while (reader.Read())
                 {
-                    Message message = new Message()
-                    {
-                        SenderNickname = reader.GetString("SenderNickname"),
-                        ReceiverNickname = reader.GetStringSafe("ReceiverNickname"),
-                        Text = reader.GetString("Text"),
-                        PostDateTime = reader.GetDateTime("PostDateTime")
-                    };
-
+                    Message message = new Message(
+                        reader.GetString("SenderNickname"),
+                        reader.GetStringSafe("ReceiverNickname"),
+                        reader.GetString("Text"),
+                        reader.GetDateTime("PostDateTime"));
+                    
                     messages.AddLast(message);
                 }
             }
