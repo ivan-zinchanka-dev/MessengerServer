@@ -14,7 +14,7 @@ public class Client
             using TcpClient tcpClient = new TcpClient();
             await tcpClient.ConnectAsync("127.0.0.1", 8888);
             NetworkStream networkStream = tcpClient.GetStream();
-            Console.WriteLine("Connected to server");
+            Console.WriteLine("Client has connected to server");
             
             StreamWriter writer = new StreamWriter(networkStream);
             string rawLine = JsonSerializer.Serialize(CreateTestMessage());
@@ -23,7 +23,7 @@ public class Client
             Query query = new Query(QueryHeader.PostMessage, rawLine);
             await writer.WriteAsync(query.ToString());
             await writer.FlushAsync();
-            Console.WriteLine("Message was sent");
+            Console.WriteLine("The message was sent");
         
             StreamReader reader = new StreamReader(networkStream);
             rawLine = await reader.ReadLineAsync();
@@ -32,7 +32,7 @@ public class Client
             Response response = Response.FromRawLine(rawLine);
             List<Message> chat = JsonSerializer.Deserialize<List<Message>>(response.JsonDataString);
             
-            Console.WriteLine("Received messages:");
+            Console.WriteLine("Received messages: ");
             foreach (Message message in chat)
             {
                 Console.WriteLine(message);
