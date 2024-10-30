@@ -16,8 +16,6 @@ public class DatabaseContext : IAsyncDisposable
     private readonly SqlConnection _connection;
     private readonly ILogger<DatabaseContext> _logger;
     
-    // TODO Correct all strings (Client & Server)
-    
     public DatabaseContext(ILogger<DatabaseContext> logger)
     {
         _connection = new SqlConnection(ConnectionString);
@@ -29,7 +27,7 @@ public class DatabaseContext : IAsyncDisposable
         try
         {
             await _connection.OpenAsync();
-            _logger.LogInformation("Connected with database");
+            _logger.LogInformation("The client has successfully connected to the database.");
         }
         catch (SqlException ex)
         {
@@ -137,7 +135,7 @@ public class DatabaseContext : IAsyncDisposable
         if (_connection.State == ConnectionState.Open)
         {
             await _connection.CloseAsync();
-            _logger.LogInformation("Disconnected from database");
+            _logger.LogInformation("The client has disconnected from the database.");
         }
     }
 

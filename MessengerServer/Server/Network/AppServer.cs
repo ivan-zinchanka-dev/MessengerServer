@@ -59,7 +59,7 @@ public class AppServer : IAsyncDisposable
             _messages = new ConcurrentQueue<Message>(await _databaseContext.GetAllMessagesAsync());
 
             IsRunning = true;
-            Logger.LogInformation($"Server is started on thread {Thread.CurrentThread.ManagedThreadId}");
+            Logger.LogInformation($"The server is running in a thread {Thread.CurrentThread.ManagedThreadId}.");
             
             Task clientsLoop = Task.Run(StartClientsLoop);
             Task clientServicesLoop = Task.Run(StartClientServicesLoop);
@@ -82,7 +82,7 @@ public class AppServer : IAsyncDisposable
         _tcpListener = new TcpListener(IPAddress.Any, _options.ClientPort);
         _tcpListener.Start();
     
-        Logger.LogInformation($"Clients loop started on thread {Thread.CurrentThread.ManagedThreadId}");
+        Logger.LogInformation($"The client loop is running in a thread {Thread.CurrentThread.ManagedThreadId}.");
         
         while (IsRunning)
         {
@@ -95,7 +95,7 @@ public class AppServer : IAsyncDisposable
     {
         _udpReceiver = new UdpClient(_options.ClientServicePort);
 
-        Logger.LogInformation($"Client services loop started on thread {Thread.CurrentThread.ManagedThreadId}");
+        Logger.LogInformation($"The client services loop is running in a thread {Thread.CurrentThread.ManagedThreadId}");
         
         while (IsRunning)
         {
@@ -144,7 +144,7 @@ public class AppServer : IAsyncDisposable
                         break;
 
                     default:
-                        Logger.LogWarning("Unknown command");
+                        Logger.LogWarning($"Unknown command received: {(int)query.Header}.");
                         break;
                 }
             }
@@ -177,7 +177,7 @@ public class AppServer : IAsyncDisposable
             }
             else
             {
-                Logger.LogWarning("Unknown command");
+                Logger.LogWarning($"Unknown command received: {(int)query.Header}.");
             }
         }
         catch (Exception ex)
