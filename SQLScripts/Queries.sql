@@ -22,6 +22,13 @@ CREATE TABLE [Message](
 
 GO
 
+
+DELETE FROM [Message]
+GO 
+
+DELETE FROM [User]
+GO
+
 DROP TABLE [Message]
 GO
 
