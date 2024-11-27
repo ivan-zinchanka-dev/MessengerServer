@@ -7,19 +7,23 @@ namespace MessengerServer.Server.Database;
 
 public class DatabaseContext : IAsyncDisposable
 {
-    private const string ConnectionString = "Server=localhost;Database=chat_app;Trusted_Connection=True;TrustServerCertificate=True;";
-    private const string FindUserExpression = "SELECT [Nickname] FROM [User] WHERE [Nickname] = @Nickname AND [Password] = @Password";
-    private const string CreateUserExpression = "INSERT INTO [User] VALUES (@Nickname, @Password)";
-    private const string GetAllSortedMessagesExpression = "SELECT * FROM [Message] ORDER BY [PostDateTime]";
-    private const string PostMessageExpression = "INSERT INTO [Message] VALUES (@SenderNickname, @ReceiverNickname, @Text, @PostDateTime)";
-    
-    private readonly SqlConnection _connection;
-    private readonly ILogger<DatabaseContext> _logger;
-    
-    public DatabaseContext(ILogger<DatabaseContext> logger)
+    private static class QueryStrings
     {
-        _connection = new SqlConnection(ConnectionString);
+        public const string FindUserExpression = "SELECT [Nickname] FROM [User] WHERE [Nickname] = @Nickname AND [Password] = @Password";
+        public const string CreateUserExpression = "INSERT INTO [User] VALUES (@Nickname, @Password)";
+        public const string GetAllSortedMessagesExpression = "SELECT * FROM [Message] ORDER BY [PostDateTime]";
+        public const string PostMessageExpression = "INSERT INTO [Message] VALUES (@SenderNickname, @ReceiverNickname, @Text, @PostDateTime)";
+    }
+    
+    private readonly DatabaseOptions _options;
+    private readonly ILogger<DatabaseContext> _logger;
+    private readonly SqlConnection _connection;
+    
+    public DatabaseContext(DatabaseOptions options, ILogger<DatabaseContext> logger)
+    {
+        _options = options;
         _logger = logger;
+        _connection = new SqlConnection(_options.ConnectionString);
     }
 
     public async Task ConnectToDatabaseAsync()
@@ -39,7 +43,7 @@ public class DatabaseContext : IAsyncDisposable
     {
         try
         {
-            SqlCommand command = new SqlCommand(FindUserExpression, _connection);
+            SqlCommand command = new SqlCommand(QueryStrings.FindUserExpression, _connection);
             command.Parameters.Add(new SqlParameter("@Nickname", user.Nickname));
             command.Parameters.Add(new SqlParameter("@Password", user.Password));
             
@@ -62,7 +66,7 @@ public class DatabaseContext : IAsyncDisposable
     {
         try
         {
-            SqlCommand command = new SqlCommand(CreateUserExpression, _connection);
+            SqlCommand command = new SqlCommand(QueryStrings.CreateUserExpression, _connection);
             command.Parameters.Add(new SqlParameter("@Nickname", user.Nickname));
             command.Parameters.Add(new SqlParameter("@Password", user.Password));
             
@@ -81,7 +85,7 @@ public class DatabaseContext : IAsyncDisposable
     {
         try
         {
-            SqlCommand command = new SqlCommand(GetAllSortedMessagesExpression, _connection);
+            SqlCommand command = new SqlCommand(QueryStrings.GetAllSortedMessagesExpression, _connection);
             SqlDataReader reader = await command.ExecuteReaderAsync();
             
             LinkedList<Message> messages = new LinkedList<Message>();
@@ -114,7 +118,7 @@ public class DatabaseContext : IAsyncDisposable
     {
         try
         {
-            SqlCommand command = new SqlCommand(PostMessageExpression, _connection);
+            SqlCommand command = new SqlCommand(QueryStrings.PostMessageExpression, _connection);
             command.Parameters.Add(new SqlParameter("@SenderNickname", message.SenderNickname));
             command.Parameters.Add(new SqlParameter("@ReceiverNickname", ToNullableDbObject(message.ReceiverNickname)));
             command.Parameters.Add(new SqlParameter("@Text", message.Text));

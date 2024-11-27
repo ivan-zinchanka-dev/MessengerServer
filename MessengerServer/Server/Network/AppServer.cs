@@ -12,16 +12,15 @@ namespace MessengerServer.Server.Network;
 
 public class AppServer : IAsyncDisposable
 {
-    private TcpListener _tcpListener;
-    private UdpClient _udpReceiver;
-    
     private readonly AppServerOptions _options;
     private readonly DatabaseContext _databaseContext;
     
     private readonly object _stateLocker = new object();
     private bool _isRunning;
-    
     private ConcurrentQueue<Message> _messages;
+    
+    private TcpListener _tcpListener;
+    private UdpClient _udpReceiver;
     
     public ILogger<AppServer> Logger { get; private set; }
 

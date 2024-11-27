@@ -15,6 +15,7 @@ public static class Program
     
     private static AppServer _appServer;
     private static AppServerOptions _serverOptions;
+    private static DatabaseOptions _databaseOptions;
     private static IniService _iniService;
     
     public static async Task Main(string[] args)
@@ -23,6 +24,7 @@ public static class Program
         _iniService = new IniService(appConfigPath);
 
         InitAppServerOptions();
+        InitDatabaseOptions();
         
         IHost host = Host.CreateDefaultBuilder()
             .ConfigureLogging(loggingBuilder =>
@@ -36,6 +38,7 @@ public static class Program
             {
                 services
                     .AddSingleton<AppServerOptions>(_serverOptions)
+                    .AddSingleton<DatabaseOptions>(_databaseOptions)
                     .AddSingleton<AppServer>()
                     .AddTransient<DatabaseContext>();
             })
@@ -78,11 +81,18 @@ public static class Program
     private static void InitAppServerOptions()
     {
         const string serverSection = "Server";
-        
         string clientPortString = _iniService.GetString(serverSection, nameof(_serverOptions.ClientPort));
         string servicePortString = _iniService.GetString(serverSection, nameof(_serverOptions.ClientServicePort));
 
         _serverOptions = new AppServerOptions(Convert.ToInt32(clientPortString), Convert.ToInt32(servicePortString));
     }
-    
+
+    private static void InitDatabaseOptions()
+    {
+        const string databaseSection = "Database";
+        string connectionString = _iniService.GetString(databaseSection, nameof(_databaseOptions.ConnectionString));
+        
+        _databaseOptions = new DatabaseOptions(connectionString);
+    }
+
 }
