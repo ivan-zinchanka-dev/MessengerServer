@@ -13,6 +13,14 @@ public class DatabaseContext : IAsyncDisposable
         public const string CreateUserExpression = "INSERT INTO [User] VALUES (@Nickname, @Password)";
         public const string GetAllSortedMessagesExpression = "SELECT * FROM [Message] ORDER BY [PostDateTime]";
         public const string PostMessageExpression = "INSERT INTO [Message] VALUES (@SenderNickname, @ReceiverNickname, @Text, @PostDateTime)";
+
+        public const string NicknameParam = "@Nickname";
+        public const string PasswordParam = "@Password";
+        
+        public const string SenderNicknameParam = "@SenderNickname";
+        public const string ReceiverNicknameParam = "@ReceiverNickname";
+        public const string TextParam = "@Text";
+        public const string PostDateTimeParam = "@PostDateTime";
     }
     
     private readonly DatabaseOptions _options;
@@ -44,8 +52,8 @@ public class DatabaseContext : IAsyncDisposable
         try
         {
             SqlCommand command = new SqlCommand(QueryStrings.FindUserExpression, _connection);
-            command.Parameters.Add(new SqlParameter("@Nickname", user.Nickname));
-            command.Parameters.Add(new SqlParameter("@Password", user.Password));
+            command.Parameters.Add(new SqlParameter(QueryStrings.NicknameParam, user.Nickname));
+            command.Parameters.Add(new SqlParameter(QueryStrings.PasswordParam, user.Password));
             
             SqlDataReader reader = await command.ExecuteReaderAsync();
 
@@ -67,8 +75,8 @@ public class DatabaseContext : IAsyncDisposable
         try
         {
             SqlCommand command = new SqlCommand(QueryStrings.CreateUserExpression, _connection);
-            command.Parameters.Add(new SqlParameter("@Nickname", user.Nickname));
-            command.Parameters.Add(new SqlParameter("@Password", user.Password));
+            command.Parameters.Add(new SqlParameter(QueryStrings.NicknameParam, user.Nickname));
+            command.Parameters.Add(new SqlParameter(QueryStrings.PasswordParam, user.Password));
             
             int affectedRows = await command.ExecuteNonQueryAsync();
             return affectedRows > 0;
@@ -95,10 +103,10 @@ public class DatabaseContext : IAsyncDisposable
                 while (reader.Read())
                 {
                     Message message = new Message(
-                        reader.GetString("SenderNickname"),
-                        reader.GetStringSafe("ReceiverNickname"),
-                        reader.GetString("Text"),
-                        reader.GetDateTime("PostDateTime"));
+                        reader.GetString(nameof(message.SenderNickname)),
+                        reader.GetStringSafe(nameof(message.ReceiverNickname)),
+                        reader.GetString(nameof(message.Text)),
+                        reader.GetDateTime(nameof(message.PostDateTime)));
                     
                     messages.AddLast(message);
                 }
@@ -119,10 +127,10 @@ public class DatabaseContext : IAsyncDisposable
         try
         {
             SqlCommand command = new SqlCommand(QueryStrings.PostMessageExpression, _connection);
-            command.Parameters.Add(new SqlParameter("@SenderNickname", message.SenderNickname));
-            command.Parameters.Add(new SqlParameter("@ReceiverNickname", ToNullableDbObject(message.ReceiverNickname)));
-            command.Parameters.Add(new SqlParameter("@Text", message.Text));
-            command.Parameters.Add(new SqlParameter("@PostDateTime", message.PostDateTime));
+            command.Parameters.Add(new SqlParameter(QueryStrings.SenderNicknameParam, message.SenderNickname));
+            command.Parameters.Add(new SqlParameter(QueryStrings.ReceiverNicknameParam, ToNullableDbObject(message.ReceiverNickname)));
+            command.Parameters.Add(new SqlParameter(QueryStrings.TextParam, message.Text));
+            command.Parameters.Add(new SqlParameter(QueryStrings.PostDateTimeParam, message.PostDateTime));
 
             int affectedRows = await command.ExecuteNonQueryAsync();
             return affectedRows > 0;
