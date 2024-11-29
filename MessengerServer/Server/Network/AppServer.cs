@@ -42,7 +42,16 @@ public class AppServer : IAsyncDisposable
             }
         }
     }
-
+    
+    private static class Messages
+    {
+        public const string ServerStarted = "The server is running in a thread {0}.";
+        public const string ClientLoopStarted = "The client loop is running in a thread {0}.";
+        public const string ClientServicesLoopStarted = "The client services loop is running in a thread {0}.";
+        public const string UnknownCommand = "Unknown command received: {0}.";
+        public const string ExceptionOccured = "An exception occurred:\n{0}\n{1}";
+    }
+    
     public AppServer(AppServerOptions options, DatabaseContext databaseContext, ILogger<AppServer> logger)
     {
         _options = options;
@@ -58,7 +67,7 @@ public class AppServer : IAsyncDisposable
             _messages = new ConcurrentQueue<Message>(await _databaseContext.GetAllMessagesAsync());
 
             IsRunning = true;
-            Logger.LogInformation($"The server is running in a thread {Thread.CurrentThread.ManagedThreadId}.");
+            Logger.LogInformation(string.Format(Messages.ServerStarted, Thread.CurrentThread.ManagedThreadId));
             
             Task clientsLoop = Task.Run(StartClientsLoop);
             Task clientServicesLoop = Task.Run(StartClientServicesLoop);
@@ -68,7 +77,7 @@ public class AppServer : IAsyncDisposable
         }
         catch (Exception ex)
         {
-            Logger.LogCritical($"{ex.Message}\n{ex.StackTrace}");
+            Logger.LogCritical(string.Format(Messages.ExceptionOccured, ex.Message, ex.StackTrace));
         }
         finally
         {
@@ -81,7 +90,7 @@ public class AppServer : IAsyncDisposable
         _tcpListener = new TcpListener(IPAddress.Any, _options.ClientPort);
         _tcpListener.Start();
     
-        Logger.LogInformation($"The client loop is running in a thread {Thread.CurrentThread.ManagedThreadId}.");
+        Logger.LogInformation(string.Format(Messages.ClientLoopStarted, Thread.CurrentThread.ManagedThreadId));
         
         while (IsRunning)
         {
@@ -94,7 +103,7 @@ public class AppServer : IAsyncDisposable
     {
         _udpReceiver = new UdpClient(_options.ClientServicePort);
 
-        Logger.LogInformation($"The client services loop is running in a thread {Thread.CurrentThread.ManagedThreadId}");
+        Logger.LogInformation(string.Format(Messages.ClientServicesLoopStarted, Thread.CurrentThread.ManagedThreadId));
         
         while (IsRunning)
         {
@@ -143,14 +152,14 @@ public class AppServer : IAsyncDisposable
                         break;
 
                     default:
-                        Logger.LogWarning($"Unknown command received: {(int)query.Header}.");
+                        Logger.LogWarning(string.Format(Messages.UnknownCommand, nameof(query.Header)));
                         break;
                 }
             }
         }
         catch (Exception ex)
         {
-            Logger.LogError($"{ex.Message}\n{ex.StackTrace}");
+            Logger.LogError(string.Format(Messages.ExceptionOccured, ex.Message, ex.StackTrace));
         }
         finally
         {
@@ -176,12 +185,12 @@ public class AppServer : IAsyncDisposable
             }
             else
             {
-                Logger.LogWarning($"Unknown command received: {(int)query.Header}.");
+                Logger.LogWarning(string.Format(Messages.UnknownCommand, nameof(query.Header)));
             }
         }
         catch (Exception ex)
         {
-            Logger.LogError($"{ex.Message}\n{ex.StackTrace}");
+            Logger.LogError(string.Format(Messages.ExceptionOccured, ex.Message, ex.StackTrace));
         }
         finally
         {
