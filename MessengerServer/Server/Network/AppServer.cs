@@ -69,8 +69,8 @@ public class AppServer : IAsyncDisposable
             IsRunning = true;
             Logger.LogInformation(string.Format(Messages.ServerStarted, Thread.CurrentThread.ManagedThreadId));
             
-            Task clientsLoop = Task.Run(StartClientsLoop);
-            Task clientServicesLoop = Task.Run(StartClientServicesLoop);
+            Task clientsLoop = Task.Run(StartClientsLoopAsync);
+            Task clientServicesLoop = Task.Run(StartClientServicesLoopAsync);
             
             await Task.WhenAll(clientsLoop, clientServicesLoop);
 
@@ -85,7 +85,7 @@ public class AppServer : IAsyncDisposable
         }
     }
     
-    private async Task StartClientsLoop()
+    private async Task StartClientsLoopAsync()
     {
         _tcpListener = new TcpListener(IPAddress.Any, _options.ClientPort);
         _tcpListener.Start();
@@ -99,7 +99,7 @@ public class AppServer : IAsyncDisposable
         }
     }
 
-    private async Task StartClientServicesLoop()
+    private async Task StartClientServicesLoopAsync()
     {
         _udpReceiver = new UdpClient(_options.ClientServicePort);
 
@@ -127,12 +127,12 @@ public class AppServer : IAsyncDisposable
                 switch (query.Header)
                 {
                     case QueryHeader.SignIn:
-                        response = await SignIn(query.JsonDataString);
+                        response = await SignInAsync(query.JsonDataString);
                         await networkAdaptor.SendResponseAsync(response);
                         break;
                     
                     case QueryHeader.SignUp:
-                        response = await SignUp(query.JsonDataString);
+                        response = await SignUpAsync(query.JsonDataString);
                         await networkAdaptor.SendResponseAsync(response);
                         break;
 
@@ -143,7 +143,7 @@ public class AppServer : IAsyncDisposable
                         break;
                     
                     case QueryHeader.PostMessage:
-                        response = await PostMessage(query.JsonDataString);
+                        response = await PostMessageAsync(query.JsonDataString);
                         await networkAdaptor.SendResponseAsync(response);
                         break;
                         
@@ -198,7 +198,7 @@ public class AppServer : IAsyncDisposable
         }
     }
 
-    private async Task<Response> SignIn(string jsonDataString)
+    private async Task<Response> SignInAsync(string jsonDataString)
     {
         User user = JsonSerializer.Deserialize<User>(jsonDataString);
         bool success = await _databaseContext.IsUserExistsAsync(user);
@@ -207,7 +207,7 @@ public class AppServer : IAsyncDisposable
         return new Response(jsonMessageBuffer);
     }
     
-    private async Task<Response> SignUp(string jsonDataString)
+    private async Task<Response> SignUpAsync(string jsonDataString)
     {
         User user = JsonSerializer.Deserialize<User>(jsonDataString);
         bool success = await _databaseContext.CreateUserAsync(user);
@@ -216,7 +216,7 @@ public class AppServer : IAsyncDisposable
         return new Response(jsonMessageBuffer);
     }
     
-    private async Task<Response> PostMessage(string jsonDataString)
+    private async Task<Response> PostMessageAsync(string jsonDataString)
     {
         Message message = JsonSerializer.Deserialize<Message>(jsonDataString);
         bool success = await _databaseContext.PostMessageAsync(message);
